@@ -56,3 +56,30 @@ from sklearn.preprocessing import StandardScaler
 scaler=StandardScaler()
 X_train_scaled=scaler.fit_transform(X_train)
 X_test_scaled=scaler.transform(X_test)
+
+
+**Hyper Parameter Tuning:**
+model=LogisticRegression()
+penalty=['l1', 'l2', 'elasticnet']
+c_values=[100,10,1.0,0.1,0.01]
+solver=['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']
+
+params=dict(penalty=penalty,C=c_values,solver=solver)
+
+from sklearn.model_selection import StratifiedKFold
+cv=StratifiedKFold()
+
+## GridSearchCV
+from sklearn.model_selection import GridSearchCV
+
+grid=GridSearchCV(estimator=model,param_grid=params,scoring='accuracy',cv=cv,n_jobs=-1)
+
+grid.fit(X_train,y_train)
+
+## RandomSearchCV
+from sklearn.model_selection import RandomizedSearchCV
+
+model=LogisticRegression()
+randomcv=RandomizedSearchCV(estimator=model,param_distributions=params,cv=5,scoring='accuracy')
+
+randomcv.fit(X_train,y_train)
