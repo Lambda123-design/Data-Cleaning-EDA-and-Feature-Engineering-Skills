@@ -1,2 +1,58 @@
 # Data-Cleaning-EDA-and-Feature-Engineering-Skills
-Details my skills on Data Cleaning, EDA and Feature Engineering
+
+**Algerian Forest Fires Project**
+
+**Data Cleaning Learnings**
+1. dataset.loc[:122,"Region"]=0
+   dataset.loc[122:,"Region"]=1
+
+2. df_copy['Classes']=np.where(df_copy['Classes'].str.contains('not fire'),0,1)
+
+**EDA Learnings**
+3. plt.style.use('seaborn')
+df_copy.hist(bins=50,figsize=(20,15))
+plt.show()
+
+4. percentage=df_copy['Classes'].value_counts(normalize=True)*100
+
+5. Plotting piechart
+classlabels=["Fire","Not Fire"]
+plt.figure(figsize=(12,7))
+plt.pie(percentage,labels=classlabels,autopct='%1.1f%%')
+plt.title("Pie Chart of Classes")
+plt.show()
+
+6. Monthly Fire Analysis
+## Monthly Fire Analysis
+dftemp=df.loc[df['Region']==1]
+plt.subplots(figsize=(13,6))
+sns.set_style('whitegrid')
+sns.countplot(x='month',hue='Classes',data=df)
+plt.ylabel('Number of Fires',weight='bold')
+plt.xlabel('Months',weight='bold')
+plt.title("Fire Analysis of Sidi- Bel Regions",weight='bold')
+
+7. Correlation for Featuring Selection:
+def correlation(dataset, threshold):
+    col_corr = set()
+    corr_matrix = dataset.corr()
+    for i in range(len(corr_matrix.columns)):
+        for j in range(i):
+            if abs(corr_matrix.iloc[i, j]) > threshold: 
+                colname = corr_matrix.columns[i]
+                col_corr.add(colname)
+    return col_corr
+
+## threshold--Domain expertise
+corr_features=correlation(X_train,0.85)
+
+## drop features when correlation is more than 0.85 
+X_train.drop(corr_features,axis=1,inplace=True)
+X_test.drop(corr_features,axis=1,inplace=True)
+X_train.shape,X_test.shape
+
+8. Feature Scaling:
+from sklearn.preprocessing import StandardScaler
+scaler=StandardScaler()
+X_train_scaled=scaler.fit_transform(X_train)
+X_test_scaled=scaler.transform(X_test)
