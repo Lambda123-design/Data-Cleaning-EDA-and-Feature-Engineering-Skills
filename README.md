@@ -87,7 +87,8 @@ randomcv.fit(X_train,y_train)
 
 ****Student Performance Predictor (End-to-End-ML_Project)****
 
-## Create Column Transformer with 3 types of transformers
+# Create Column Transformer with 3 types of transformers
+
 num_features = X.select_dtypes(exclude="object").columns
 
 cat_features = X.select_dtypes(include="object").columns
@@ -106,3 +107,13 @@ preprocessor = ColumnTransformer(
          ("StandardScaler", numeric_transformer, num_features),        
     ]
 )
+
+# Creating an Evaluate Function to give all metrics after model training
+
+def evaluate_model(true, predicted):
+    mae = mean_absolute_error(true, predicted)
+    mse = mean_squared_error(true, predicted)
+    rmse = np.sqrt(mean_squared_error(true, predicted))
+    r2_square = r2_score(true, predicted)
+    return mae, rmse, r2_square
+
