@@ -83,3 +83,26 @@ model=LogisticRegression()
 randomcv=RandomizedSearchCV(estimator=model,param_distributions=params,cv=5,scoring='accuracy')
 
 randomcv.fit(X_train,y_train)
+
+
+****Student Performance Predictor (End-to-End-ML_Project)****
+
+## Create Column Transformer with 3 types of transformers
+num_features = X.select_dtypes(exclude="object").columns
+
+cat_features = X.select_dtypes(include="object").columns
+
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+
+from sklearn.compose import ColumnTransformer
+
+numeric_transformer = StandardScaler()
+
+oh_transformer = OneHotEncoder()
+
+preprocessor = ColumnTransformer(
+    [
+        ("OneHotEncoder", oh_transformer, cat_features),
+         ("StandardScaler", numeric_transformer, num_features),        
+    ]
+)
