@@ -1,8 +1,14 @@
 # Data-Cleaning-EDA-and-Feature-Engineering-Skills
 
+######### Very very very Important: In Used Car Price Prediction, "Car Model" has around 120 unique features and we did **Label Encoding** for it. Reason is **If we assign a Label, it will try to find out the relationship between Label and the target column Price. Say, If Label is very high, Price may also be high That kind of relationship it will find out**(In Krish Interview he has asked the question based on this - If Pincode has around 30 categories, how do you encode it, as it might be very important in House Price Prediction Project)
+
+#### Or we can also assign labels to top 15, and assign "Others" label to rest; Out of those 120
+
+#### In Column Transformer - remainder='passthrough' - Only categorical features will change; Don't change others
+
 #### In One-Hot Encoding, if n features we only need n-1 columns; So use drop_first="True"
 
-#### Important: Learn about Column Transformer below in Holiday Project (2nd Project) 
+#### Important: Learn about Column Transformer below in Holiday Project (3rd Project) 
 
 #### Always check for y.value_counts for Imbalanced Datasets (3968, 920), Krish said it still has good number of both categories; Ensemble Models such as Random Forest, XGBoost,etc.. perform well in Imbalanced Datasets
 
@@ -10,13 +16,15 @@
 
 #### Creating a New Feature to make more sense; and also remove one feature from the dataset for the mode
 
-##### Getting Discrete Features: **Discrete Feature can have around 10**; Example Pincode; Whereas categorical will have 2 or 3
+##### Getting Discrete Features: **Discrete Feature can have around 10**; Example Pincode; Whereas categorical will have 2 or 3 
+
+##### Same thing we have used in Used Car Price Prediction Project too (4th Project); Check that code too
 
 df['TotalVisiting'] = df['NumberOfPersonVisiting'] + df['NumberOfChildrenVisiting']
    
 df.drop(columns=['NumberOfPersonVisiting', 'NumberOfChildrenVisiting'], axis=1, inplace=True)
 
-**Algerian Forest Fires Project**
+**I) Algerian Forest Fires Project**
 
 **Data Cleaning Learnings**
 1. dataset.loc[:122,"Region"]=0
@@ -101,7 +109,7 @@ randomcv=RandomizedSearchCV(estimator=model,param_distributions=params,cv=5,scor
 randomcv.fit(X_train,y_train)
 
 
-****Student Performance Predictor (End-to-End-ML_Project)****
+****II) Student Performance Predictor (End-to-End-ML_Project)****
 
 # Create Column Transformer with 3 types of transformers
 
@@ -133,7 +141,7 @@ def evaluate_model(true, predicted):
     r2_square = r2_score(true, predicted)
     return mae, rmse, r2_square
 
-**Holiday Package Prediction Project**
+**III) Holiday Package Prediction Project**
 
 1. Fixing "Female" and "Fe Male":
 
@@ -195,3 +203,49 @@ preprocessor = ColumnTransformer(
           ("StandardScaler", numeric_transformer, num_features)
     ]
 )
+
+**IV) Used Car Price Prediction:**
+
+1. Car model will be most important, so we are removing other two
+
+df.drop('car_name', axis=1, inplace=True)
+
+df.drop('brand', axis=1, inplace=True)
+
+**2. Seeing the Feature Types**
+
+num_features = [feature for feature in df.columns if df[feature].dtype != 'O']
+
+cat_features = [feature for feature in df.columns if df[feature].dtype == 'O']
+
+discrete_features=[feature for feature in num_features if len(df[feature].unique())<=25]
+
+continuous_features=[feature for feature in num_features if feature not in discrete_features]
+
+**3. Label Encoding for "Model" - Read the top first point; Very Important**
+
+le=LabelEncoder()
+
+X['model']=le.fit_transform(X['model'])
+
+**4. Create Column Transformer with 3 types of transformers:**
+
+num_features = X.select_dtypes(exclude="object").columns
+onehot_columns = ['seller_type','fuel_type','transmission_type']
+
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.compose import ColumnTransformer
+
+numeric_transformer = StandardScaler()
+oh_transformer = OneHotEncoder(drop='first')
+
+preprocessor = ColumnTransformer(
+    [
+        ("OneHotEncoder", oh_transformer, onehot_columns),
+        ("StandardScaler", numeric_transformer, num_features)
+    ],remainder='passthrough'
+
+)
+
+#### remainder='passthrough' - Only categorical features will change; Don't change others
+
