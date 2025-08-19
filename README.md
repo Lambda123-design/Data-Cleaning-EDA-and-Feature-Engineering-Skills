@@ -1,5 +1,21 @@
 # Data-Cleaning-EDA-and-Feature-Engineering-Skills
 
+#### In One-Hot Encoding, if n features we only need n-1 columns; So use drop_first="True"
+
+#### Important: Learn about Column Transformer below in Holiday Project (2nd Project) 
+
+#### Always check for y.value_counts for Imbalanced Datasets (3968, 920), Krish said it still has good number of both categories; Ensemble Models such as Random Forest, XGBoost,etc.. perform well in Imbalanced Datasets
+
+##### Always check for "df['Gender'].value_counts()" value_counts because if there is any difference in values. In Krish Project, there was "Female" and "Fe Male". We have to fix all those in Feature Engineering
+
+#### Creating a New Feature to make more sense; and also remove one feature from the dataset for the mode
+
+##### Getting Discrete Features: **Discrete Feature can have around 10**; Example Pincode; Whereas categorical will have 2 or 3
+
+df['TotalVisiting'] = df['NumberOfPersonVisiting'] + df['NumberOfChildrenVisiting']
+   
+df.drop(columns=['NumberOfPersonVisiting', 'NumberOfChildrenVisiting'], axis=1, inplace=True)
+
 **Algerian Forest Fires Project**
 
 **Data Cleaning Learnings**
@@ -117,3 +133,65 @@ def evaluate_model(true, predicted):
     r2_square = r2_score(true, predicted)
     return mae, rmse, r2_square
 
+**Holiday Package Prediction Project**
+
+1. Fixing "Female" and "Fe Male":
+
+df['Gender'].value_counts()
+
+df['Gender'] = df['Gender'].replace('Fe Male', 'Female')
+
+df['MaritalStatus'] = df['MaritalStatus'].replace('Single', 'Unmarried')
+
+2. Check for Missing Values:
+
+##these are the features with nan value
+features_with_na=[features for features in df.columns if df[features].isnull().sum()>=1]
+for feature in features_with_na:
+    print(feature,np.round(df[feature].isnull().mean()*100,5), '% missing values')
+
+3. statistics on numerical columns (Null cols)
+   
+df[features_with_na].select_dtypes(exclude='object').describe()
+
+#### 4. Creating a New Feature to make more sense; and also remove one feature from the dataset for the mode
+
+df['TotalVisiting'] = df['NumberOfPersonVisiting'] + df['NumberOfChildrenVisiting']
+   
+df.drop(columns=['NumberOfPersonVisiting', 'NumberOfChildrenVisiting'], axis=1, inplace=True)
+
+5. get all the numeric features
+num_features = [feature for feature in df.columns if df[feature].dtype != 'O'];
+print('Num of Numerical Features :', len(num_features))
+
+6. Getting Categorical Features
+
+cat_features = [feature for feature in df.columns if df[feature].dtype == 'O']; 
+print('Num of Categorical Features :', len(cat_features))
+
+7. Getting Discrete Features: **Discrete Feature can have around 10**
+
+discrete_features=[feature for feature in num_features if len(df[feature].unique())<=25]; print('Num of Discrete Features :',len(discrete_features))
+
+8. Getting Continuous Features:
+
+continuous_features=[feature for feature in num_features if feature not in discrete_features]; print('Num of Continuous Features :',len(continuous_features))
+
+9. Column Transformer
+
+# Create Column Transformer with 3 types of transformers
+cat_features = X.select_dtypes(include="object").columns
+num_features = X.select_dtypes(exclude="object").columns
+
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.compose import ColumnTransformer
+
+numeric_transformer = StandardScaler()
+oh_transformer = OneHotEncoder(drop='first')
+
+preprocessor = ColumnTransformer(
+    [
+         ("OneHotEncoder", oh_transformer, cat_features),
+          ("StandardScaler", numeric_transformer, num_features)
+    ]
+)
