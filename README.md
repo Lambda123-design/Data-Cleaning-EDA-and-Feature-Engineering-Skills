@@ -1,5 +1,9 @@
 # Data-Cleaning-EDA-and-Feature-Engineering-Skills
 
+##### X_train=scaler.fit_transform(X_train); Fit will find mean and Std Dev; Transform will go and do Standardization (Z-Score); X_test=scaler.transform(X_test) For X_Test we don't need to use it because it will go and use the same mean and std dev found in X_Train; It also avoids Data Leakage
+
+##### It shldn't know anything about test data; It shld only use Train Data mean and std dev
+
 ######### Very very very Important: In Used Car Price Prediction, "Car Model" has around 120 unique features and we did **Label Encoding** for it. Reason is **If we assign a Label, it will try to find out the relationship between Label and the target column Price. Say, If Label is very high, Price may also be high That kind of relationship it will find out**(In Krish Interview he has asked the question based on this - If Pincode has around 30 categories, how do you encode it, as it might be very important in House Price Prediction Project)
 
 #### Or we can also assign labels to top 15, and assign "Others" label to rest; Out of those 120
@@ -24,6 +28,12 @@ df['TotalVisiting'] = df['NumberOfPersonVisiting'] + df['NumberOfChildrenVisitin
    
 df.drop(columns=['NumberOfPersonVisiting', 'NumberOfChildrenVisiting'], axis=1, inplace=True)
 
+###### Imp: For Standardization with Height and weight Krish got an error; Expecting 2D for X; So he did "X=df[['Weight']]"
+
+##### X_train=scaler.fit_transform(X_train); Fit will find mean and Std Dev; Transform will go and do Standardization (Z-Score); X_test=scaler.transform(X_test) For X_Test we don't need to use it because it will go and use the same mean and std dev found in X_Train; It also avoids Data Leakage
+
+##### It shldn't know anything about test data; It shld only use Train Data mean and std dev
+ 
 **I) Algerian Forest Fires Project**
 
 **Data Cleaning Learnings**
@@ -246,6 +256,57 @@ preprocessor = ColumnTransformer(
     ],remainder='passthrough'
 
 )
+
+
+**V) Height Weight Prediction - Simple Linear Regression Project**
+
+1. print("The slope or coefficient of weight is ",regressor.coef_)
+print("Intercept:",regressor.intercept_)
+
+2. Plotting the best fit line -plt.scatter(X_train,y_train)
+plt.plot(X_train,regressor.predict(X_train),'r')
+
+3. ## new data point weight is 80
+
+
+### Krish got lot of errors here; Please check to video to learn
+scaled_weight=scaler.transform([[80]])
+scaled_weight
+
+scaled_weight[0]
+
+scaled_weight[0]
+
+print("The height prediction for weight 80 kg is :",regressor.predict([scaled_weight[0]]))
+
+#### 4. Assumptions to say that it is a good model:
+
+#### (i) Assumption (i)
+
+## plot a scatter plot for the prediction
+plt.scatter(y_test,y_pred_test)
+
+### If linearly distributed, then it is good model
+
+**#### (ii) Assumption (ii)**
+
+## Residuals
+residuals=y_test-y_pred_test
+residuals
+
+## plot this residuals
+import seaborn as sns
+sns.distplot(residuals,kde=True)
+
+#### If Residuals are normally distributed, then it is a Good Model
+
+#### (iii) ## Scatter plot with respect to prediction and residuals
+## uniform distribution
+plt.scatter(y_pred_test,residuals)
+
+#### Residuals should be uniformly distributed; That is, it should be distributed here and there in the graph
+
+###### Please refer to the Notebook for Evaluation and other visualization codes
 
 #### remainder='passthrough' - Only categorical features will change; Don't change others
 
