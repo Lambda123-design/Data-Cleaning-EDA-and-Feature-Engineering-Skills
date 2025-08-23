@@ -257,6 +257,7 @@ preprocessor = ColumnTransformer(
 
 )
 
+#### remainder='passthrough' - Only categorical features will change; Don't change others
 
 **V) Height Weight Prediction - Simple Linear Regression Project**
 
@@ -308,5 +309,73 @@ plt.scatter(y_pred_test,residuals)
 
 ###### Please refer to the Notebook for Evaluation and other visualization codes
 
-#### remainder='passthrough' - Only categorical features will change; Don't change others
+**VI) California Housing Prediction:**
 
+1. Loading the Dataset:
+
+california=fetch_california_housing(); california.keys(); print(california.DESCR); california.target_names; california.feature_names
+
+## Lets prepare the dataframe 
+dataset=pd.DataFrame(california.data,columns=california.feature_names)
+dataset.head()
+
+dataset['Price']=california.target
+
+dataset.head()
+
+## Independent and Dependent features
+X=dataset.iloc[:,:-1] #independent features
+y=dataset.iloc[:,-1] #dependent features
+
+X_test=scaler.transform(X_test)
+
+#### Model should not have any idea about Test dataset; Mean and Std Dev will be taken from Train Dataset; It will avoid Data Leakage
+
+2. ## slope or coefficients
+regression.coef_
+
+Co-efficients will be 8 (No. of features); But Intercept will be only one
+
+## intercepts
+regression.intercept_
+
+3. ## Performance Metrics
+
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
+print(mean_squared_error(y_test,y_pred))
+print(mean_absolute_error(y_test,y_pred))
+print(np.sqrt(mean_squared_error(y_test,y_pred)))
+
+#### Score might be less because it might not have a linear property; It might be scattered here and there
+
+#### 4. Assumptions:
+
+1. Linear Property (In our case, it was having somewhat linear properties)
+
+plt.scatter(y_test,y_pred)
+plt.xlabel("Test Truth Data")
+plt.ylabel("Test Predicted Data")
+
+2. **Residual Check: If it is normal - then it is good; or not**
+
+residuals=y_test-y_pred
+
+sns.displot(residuals,kind="kde")
+
+3. ## SCatter plot with predictions and residual
+##uniform distribution
+plt.scatter(y_pred,residuals)
+
+**Here in our case, there was a Pattern and thus it might not be a good model; We we can try with other models as well**
+
+**We will learn about Ridge, Lasso, Decision Tree, Random Forest. With those performance will get increased**
+
+## Pickling - Python pickle module is used for serialising and de-serialising a Python object structure. Any object in Python can be pickled so that it can be saved on disk. What pickle does is that it “serialises” the object first before writing it to file. Pickling is a way to convert a python object (list, dict, etc.) into a character 
+stream. The idea is that this character stream contains all the information necessary to reconstruct the object in another python script.
+
+import pickle; pickle.dump(regression,open('regressor.pkl','wb'))
+
+model=pickle.load(open('regressor.pkl','rb'))
+
+model.predict(X_test)
